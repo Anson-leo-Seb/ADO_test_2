@@ -1,0 +1,31 @@
+trigger:
+  branches:
+    include:
+      - '*'
+
+variables:
+  actualBranch: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+
+resources:
+  repositories:
+    - repository: ADO_test_1
+      type: github
+      name: my-org/repo-a
+      ref: refs/heads/${{ variables.actualBranch }}
+      endpoint: my-github-service-connection
+
+    - repository: ADO_test_2
+      type: github
+      name: my-org/repo-b
+      ref: refs/heads/${{ variables.actualBranch }}
+      endpoint: my-github-service-connection
+
+stages:
+  - stage: CheckoutRepos
+    jobs:
+      - job: CheckoutAll
+        steps:
+          - checkout: self
+
+          - checkout: ADO_test_1
+          - checkout: ADO_test_2
